@@ -8,23 +8,59 @@
 
 <#--引入ckeditor插件-->
     <script type="text/javascript" src="/js/plugins/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="/js/jquery.form.js"></script>
 </head>
 
 <script type="text/javascript">
     $(function () {
 
-        //推荐文章 初始化
+        //攻略文章 初始化
         $(".btn-look").click(function () {
-
+            $("#editForm")[0].reset();
             var json = $(this).data("json");
             console.log(json);
             $("[name='id']").val(json.id);
-            $("[name=name]").val(json.name);
-            $("[name='strategy.id']").val(json.strategyId);
+            $("#coverUrl").attr("src", json.coverUrl);
+            $("input[name=coverUrl]").val(json.coverUrl);
+            $("[name=title]").val(json.title);
             $("input[name=sequence]").val(json.sequence);
-            $("select[name=state]").val((json.state + ""));
+            $("select[name=state]").val((json.state));
+            $("#strategySelect").val((json.strategyId));
 
-            $("#travelCommendModal").modal("show");
+            //初始化大攻略 二级联动
+            $.get("/strategyCatalog/catalogs.do", function (data) {
+                var temp = "";
+                $.each(data, function (index, ele) {
+                    temp += '<option value="' + ele.id + '">' + ele.name + '</option>';
+                });
+                $("#catalogSelect").html(temp);
+                $("select[name='catalog.id']").val(json.catalogId);
+
+            });
+
+            //获取文本框中的内容
+            $.get("/strategyDetail/content.do?id=" + json.id, function (data) {
+                console.log(data.content);
+                content.setData(data.content);
+
+            });
+
+            //二级联动
+            $("#strategySelect").change(function () {
+                $.get("/strategyCatalog/catalogs.do?strategyId=" + $(this).val(), function (data) {
+                    $("#catalogSelect").html("");
+
+                    var temp = "";
+                    $.each(data, function (index, ele) {
+                        temp += '<option value="' + ele.id + '">' + ele.name + '</option>';
+                    });
+                    $("#catalogSelect").html(temp);
+                });
+            });
+
+            $("#strategyModal").modal("show");
+
+
         });
 
         //推荐文章 保存
@@ -38,20 +74,39 @@
             });
         });
 
-        //新增推荐文章
+        //新增推荐文章 模态框弹出
         $("#addStrategyDetailBtn").click(function () {
+            $("#coverUrl").attr("src", " ");
 
+            $("#editForm")[0].reset();
+            //二级联动
+            $("#strategySelect").change(function () {
+                $.get("/strategyCatalog/catalogs.do?strategyId=" + $(this).val(), function (data) {
+                    $("#catalogSelect").html("");
+
+                    var temp = "";
+                    $.each(data, function (index, ele) {
+                        temp += '<option value="' + ele.id + '">' + ele.name + '</option>';
+                    });
+                    $("#catalogSelect").html(temp);
+                });
+            });
 
             $("#strategyModal").modal("show");
         });
 
-        //二级联动
-        $("#strategySelect").change(function () {
-            $.get("/strategyCatalog/catalogs?strategyId=" + $(this).val(), function (data) {
 
+        //保存按钮
+        $("#saveBtn").click(function () {
+            $("#content").html(content.getData());
+            $("#editForm").ajaxSubmit({
+                success: function (data) {
+                    successAlert(data);
+                },
             });
         });
-    });
+    })
+    ;
 </script>
 
 <body>
@@ -147,13 +202,14 @@
                         <label class="col-sm-4 control-label">封面</label>
                         <div class="col-sm-6">
                             <img id="coverUrl" width="200px"/>
-                            <input type="file" class="form-control" id="pic" name="pic">
+                            <input type="hidden" name="coverUrl" width="200px"/>
+                            <input type="file" class="form-control" id="file" name="file">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-4 control-label">所属攻略</label>
                         <div class="col-sm-6">
-                            <select id="strategySelect" name="strategy.id" class="form-control form-control-chosen"
+                            <select id="strategySelect" class="form-control form-control-chosen"
                                     data-placeholder="请选择所属攻略">
                                 <#list strategies as strategy>
                                     <option value="${strategy.id}">${strategy.title}</option>
@@ -173,9 +229,9 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label">是否发布</label>
                         <div class="col-sm-6">
-                            <select id="isRelease" class="form-control" autocomplete="off" name="isRelease">
-                                <option value="true">是</option>
-                                <option value="false">否</option>
+                            <select id="isRelease" class="form-control" autocomplete="off" name="state">
+                                <option value="1">是</option>
+                                <option value="0">否</option>
                             </select>
                         </div>
                     </div>
@@ -185,8 +241,11 @@
                             <input type="text" class="form-control" id="sequence" name="sequence" placeholder="排序">
                         </div>
                     </div>
-                    <textarea id="content" name="content" class="ckeditor" cols="10" rows="10">
+                    <textarea id="content" name="strategyContent.content" class="ckeditor" cols="10" rows="10">
                       </textarea>
+                    <script>
+                        var content = CKEDITOR.replace('content');
+                    </script>
                 </form>
             </div>
             <div class="modal-footer">

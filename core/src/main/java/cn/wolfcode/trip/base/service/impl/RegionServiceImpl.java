@@ -47,4 +47,9 @@ public class RegionServiceImpl implements IRegionService {
     public void deleteByparentId(Long id) {
         regionMapper.deleteByParentId(id);
     }
+
+    @Override
+    public List<Region> listRegionByState(int stateHot) {
+        return regionMapper.selectRegionByState(stateHot);
+    }
 }

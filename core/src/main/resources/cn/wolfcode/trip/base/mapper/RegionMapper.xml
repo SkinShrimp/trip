@@ -65,4 +65,15 @@
       </choose>
     </where>
   </select>
+
+  <!--查询热门地区的名称-->
+  <select id="selectRegionByState" resultType="region">
+    SELECT
+        id,
+        NAME,
+        state
+    FROM
+        region
+    WHERE  state = #{stateHot}
+  </select>
 </mapper>

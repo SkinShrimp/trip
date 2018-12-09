@@ -13,8 +13,41 @@
     <script src="/js/plugins/jrender/jrender.min.js"></script>
     <link rel="stylesheet" href="/js/plugins/dialog2/dialog.css"/>
     <script src="/js/plugins/dialog2/dialog.min.js"></script>
+    <!--获取路径的js导入-->
+    <script type="text/javascript" src="/js/common.js"></script>
 
+    <script type="text/javascript">
+        $(function () {
+            var params = getParams();
+            if (params.id) {
+                //查询大攻略
+                $.get("/strategies/" + params.id, function (data) {
+                    $(".strategies").renderValues(data);
+                });
 
+                //查询标题
+                $.get("/strategies/" + params.id + "/catalogs", function (data) {
+                    console.log(data);
+                    var flag = 1;
+                    var json = {
+                        list: data
+                    }
+                    $(".catalogs").renderValues(json, {
+                        'getName': function (item, value) {
+                            $(item).html("0" + flag + "/" + value);
+                            flag += 1;
+                        },
+                        'getId': function (item, value) {
+                            var href = $(item).data("href");
+                            console.log(href);
+                            $(item).attr("href", href + value);
+                        }
+                    });
+                });
+
+            }
+        });
+    </script>
 </head>
 
 <body>
@@ -34,7 +67,7 @@
 </div>
 
 <div class="container strategies">
-    <h5 class="title">广州攻略</h5>
+    <h5 class="title" render-html="title"></h5>
     <small><span>0</span>人阅读过此攻略</small>
     <div class="focus">
         <i class="fa fa-heart"><span> 0</span> 收藏</i>
@@ -68,17 +101,17 @@
                 <button class="btn">飞到羊城，只为一场最地道的早茶之旅</button>
             </a></div>
         </div>
+
+
         <div class="catalogs">
-            <div>
+            <div render-loop="list">
                 <div class="container detail">
-                    <h6>01/概况</h6>
-                    <div><a href="strategyDetails.html">
-                        <button class="btn">广州速览</button>
-                    </a><a href="strategyDetails.html">
-                        <button class="btn">最佳旅行时间</button>
-                    </a><a href="strategyDetails.html">
-                        <button class="btn">消费水平</button>
-                    </a></div>
+                    <h6 render-fun="getName" render-key="list.name"></h6>
+                    <div render-loop="list.strategyDetails">
+                        <a data-href="strategyDetails.html?id=" render-key="list.strategyDetails.id" render-fun="getId">
+                            <button class="btn" render-html="list.strategyDetails.title"></button>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -104,47 +137,47 @@
         <hr>
 
         <div id="comment">
-            <div >
+            <div>
                 <div class="container row comment">
                     <div class="col-2 comment-head">
-                        <a href="userProfiles.html" >
+                        <a href="userProfiles.html">
                             <img class="rounded-circle"
                                  src="/upload/23a45130-e59c-4844-bc52-67aed3d57fc1.jpeg">
                         </a>
                     </div>
                     <div class="col comment-right">
-                        <p class="authorName"><span >喵喵</span></p>
-                        <span class="comment-star" ><i
+                        <p class="authorName"><span>喵喵</span></p>
+                        <span class="comment-star"><i
                                 class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
                                 class="fa fa-star"></i><i class="fa fa-star-o"></i></span>
-                        <span class="comment-date" >2018-07-19</span>
+                        <span class="comment-date">2018-07-19</span>
                         <div class="comment-content">
-                            <a href="strategyComment.html" >
-                                <p >我觉得很好</p>
+                            <a href="strategyComment.html">
+                                <p>我觉得很好</p>
                             </a>
                         </div>
 
-                        <ul class="comment-img" >
+                        <ul class="comment-img">
                             <li>
-                                <img  src="/upload/9d84bc42-2797-4cf7-a86f-bcf63e192c86.jpeg">
+                                <img src="/upload/9d84bc42-2797-4cf7-a86f-bcf63e192c86.jpeg">
                             </li>
                         </ul>
 
                         <div class="d-flex icon">
-                            <a href="strategyComment.html" >
+                            <a href="strategyComment.html">
                                 <i class="fa  fa-commenting-o " style="margin-right: 10px"> 评论 </i>
-                                <i class="fa fa-thumbs-o-up" > <span >0</span> </i>
+                                <i class="fa fa-thumbs-o-up"> <span>0</span> </i>
                             </a>
                         </div>
 
                     </div>
                 </div>
 
-                </div>
             </div>
         </div>
-
     </div>
+
+</div>
 </div>
 
 <div class="operation">

@@ -18,4 +18,6 @@ public interface IRegionService {
     List<Region> listByParentId(Long parentId);
 
     void deleteByparentId(Long id);
+
+    List<Region> listRegionByState(int stateHot);
 }

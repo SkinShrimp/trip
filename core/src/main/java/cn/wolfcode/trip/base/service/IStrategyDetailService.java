@@ -1,5 +1,6 @@
 package cn.wolfcode.trip.base.service;
 
+import cn.wolfcode.trip.base.domain.StrategyContent;
 import cn.wolfcode.trip.base.domain.StrategyDetail;
 import cn.wolfcode.trip.base.query.QueryObject;
 import com.github.pagehelper.PageInfo;
@@ -18,4 +19,8 @@ public interface IStrategyDetailService {
     public abstract PageInfo<StrategyDetail> query(QueryObject qo);
 
     public abstract StrategyDetail get(Long id);
+
+    void saveOrUpdate(StrategyDetail strategyDetail);
+
+    StrategyContent getContentByDetailId(Long id);
 }

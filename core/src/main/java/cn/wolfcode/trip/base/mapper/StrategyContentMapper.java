@@ -1,6 +1,7 @@
 package cn.wolfcode.trip.base.mapper;
 
 import cn.wolfcode.trip.base.domain.StrategyContent;
+import cn.wolfcode.trip.base.query.QueryObject;
 
 import java.util.List;
 
@@ -14,4 +15,6 @@ public interface StrategyContentMapper {
     List<StrategyContent> selectAll();
 
     int updateByPrimaryKey(StrategyContent record);
+
+    List<StrategyContent> selectForList(QueryObject qo);
 }

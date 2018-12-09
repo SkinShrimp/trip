@@ -10,6 +10,9 @@
       <result column="id" property="id"/>
       <result column="title" property="title"/>
     </association>
+    <collection property="strategyDetails" ofType="strategyDetail" column="id" select="cn.wolfcode.trip.base.mapper.StrategyDetailMapper.selectByCatalogId" >
+
+    </collection>
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     DELETE FROM strategycatalog

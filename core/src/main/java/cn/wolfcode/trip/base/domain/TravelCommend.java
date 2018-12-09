@@ -14,7 +14,7 @@ import java.util.Map;
 @Getter
 public class TravelCommend extends BaseDomain {
 
-    public static final int COMMEND_TYPE = 3;//
+    public static final int COMMEND_TYPE = 3;//攻略推荐
     public static final int WEEK_TYPE = 2;//每周推荐
     public static final int MONTH_TYPE = 1;//每月推荐
 

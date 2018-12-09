@@ -61,4 +61,11 @@ public class TravelCommendServiceImpl implements ITravelCommendService {
         List<TravelCommend> list = travelCommendMapper.selectForAppList(qo);
         return new PageInfo<TravelCommend>(list);
     }
+
+    @Override
+    public PageInfo<TravelCommend> query(QueryObject qo) {
+        PageHelper.startPage(qo.getCurrentPage(), qo.getPageSize(), qo.getOrderBy());
+        List<TravelCommend> list = travelCommendMapper.selectForAppList(qo);
+        return new PageInfo<TravelCommend>(list);
+    }
 }

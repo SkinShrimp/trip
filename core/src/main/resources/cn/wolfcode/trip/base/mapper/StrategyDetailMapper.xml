@@ -12,6 +12,13 @@
     <association property="catalog" javaType="StrategyCatalog" columnPrefix="catalog_">
       <result column="id" property="id"/>
       <result column="name" property="name"/>
+      <association property="strategy" javaType="strategy" columnPrefix="strategy_">
+        <result property="id" column="id"/>
+      </association>
+    </association>
+    <association property="strategyContent" javaType="strategyContent" columnPrefix="sc_">
+      <id property="id" column="id"/>
+      <result property="content" column="content"/>
     </association>
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
@@ -29,7 +36,6 @@
   <update id="updateByPrimaryKey" parameterType="cn.wolfcode.trip.base.domain.StrategyDetail">
     UPDATE strategydetail
     SET title = #{title},
-    createTime = #{createTime},
     releaseTime = #{releaseTime},
     sequence = #{sequence},
     catalog_id = #{catalog.id},
@@ -38,9 +44,18 @@
     WHERE id = #{id}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT sd.id, sd.title, sd.createTime, sd.releaseTime, sd.sequence, sd.catalog_id, sd.coverUrl, sd.state,
+    sc.id sc_id,
+    sc.content sc_content
+    FROM strategydetail sd
+    LEFT JOIN strategycontent sc ON sc.id = sd.id
+    WHERE sd.id = #{id}
+  </select>
+
+  <select id="selectByCatalogId" parameterType="java.lang.Long" resultMap="BaseResultMap">
     SELECT id, title, createTime, releaseTime, sequence, catalog_id, coverUrl, state
     FROM strategydetail
-    WHERE id = #{id}
+    WHERE catalog_id = #{catalogId}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     SELECT
@@ -53,7 +68,8 @@
     sd.coverUrl,
     sd.state,
     sc.id catalog_id,
-    sc.name catalog_name
+    sc.name catalog_name,
+    sc.strategy_id catalog_strategy_id
     FROM
     strategydetail sd
     LEFT JOIN strategycatalog sc ON sd.catalog_id = sc.id
@@ -69,7 +85,8 @@
     sd.coverUrl,
     sd.state,
     sc.id catalog_id,
-    sc.name catalog_name
+    sc.name catalog_name,
+    sc.strategy_id catalog_strategy_id
     FROM
     strategydetail sd
     LEFT JOIN strategycatalog sc ON sd.catalog_id = sc.id

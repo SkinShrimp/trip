@@ -79,6 +79,7 @@
     <!--查询推荐的内容-->
     <select id="selectForAppList" resultType="map">
         SELECT
+        tc.id,
         tc.title,
         tc.subTitle,
         tc.coverUrl,

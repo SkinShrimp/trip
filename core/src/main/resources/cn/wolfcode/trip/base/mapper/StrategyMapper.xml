@@ -68,6 +68,21 @@
       <if test="keyword != null">
         s.title LIKE CONCAT("%", #{keyword}, "%")
       </if>
+      <choose>
+        <when test="state == 0">
+          and s.state != -1
+        </when>
+        <when test="state == 1">
+          and s.state = 1
+        </when>
+        <otherwise>
+          and s.state = -1
+        </otherwise>
+      </choose>
+      <if test="regionId != null">
+        and s.place_id = #{regionId}
+      </if>
+
     </where>
   </select>
 </mapper>

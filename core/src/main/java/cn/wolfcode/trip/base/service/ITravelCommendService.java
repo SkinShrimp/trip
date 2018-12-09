@@ -20,4 +20,6 @@ public interface ITravelCommendService {
 
 
     public abstract PageInfo<TravelCommend> getCommends(TravelCommendQueryObject qo);
+
+    public abstract PageInfo<TravelCommend> query(QueryObject qo);
 }

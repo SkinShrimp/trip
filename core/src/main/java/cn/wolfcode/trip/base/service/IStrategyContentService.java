@@ -1,6 +1,8 @@
 package cn.wolfcode.trip.base.service;
 
 import cn.wolfcode.trip.base.domain.StrategyContent;
+import cn.wolfcode.trip.base.query.QueryObject;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -15,7 +17,6 @@ public interface IStrategyContentService {
 
     public abstract StrategyContent get(Long id);
 
-    List<StrategyContent> listByParentId(Long parentId);
+    public abstract PageInfo<StrategyContent> query(QueryObject qo);
 
-    void deleteByparentId(Long id);
 }

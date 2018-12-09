@@ -10,8 +10,8 @@
     WHERE id = #{id}
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="cn.wolfcode.trip.base.domain.StrategyContent" useGeneratedKeys="true">
-    INSERT INTO strategycontent (content)
-    VALUES (#{content})
+    INSERT INTO strategycontent (id, content)
+    VALUES (#{id} ,#{content})
   </insert>
   <update id="updateByPrimaryKey" parameterType="cn.wolfcode.trip.base.domain.StrategyContent">
     UPDATE strategycontent
@@ -24,6 +24,11 @@
     WHERE id = #{id}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
+    SELECT id, content
+    FROM strategycontent
+  </select>
+
+  <select id="selectForList" resultMap="BaseResultMap">
     SELECT id, content
     FROM strategycontent
   </select>

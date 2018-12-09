@@ -32,7 +32,7 @@ public class StrategyCatalogController {
 
     @RequestMapping("/catalogs")
     @ResponseBody
-    public List getCatalogsByStrategyId(Long strategyId) {
+    public List<StrategyCatalog> getCatalogsByStrategyId(Long strategyId) {
         return strategyCatalogService.listAll(strategyId);
     }
 

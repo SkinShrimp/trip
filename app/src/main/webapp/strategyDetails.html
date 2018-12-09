@@ -1,94 +1,49 @@
 <!DOCTYPE html>
 <html>
 
-	<head lang="en">
-		<title>首页</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<link rel="stylesheet" href="/js/bootstrap-4.1.1-dist/css/bootstrap.min.css">
-		<script src="/js/jquery/jquery.min.js"></script>
-		<script src="/js/bootstrap-4.1.1-dist/js/bootstrap.min.js"></script>
-		<link rel="stylesheet" href="/css/font/css/font-awesome.min.css" />
-		<link rel="stylesheet" href="/css/reset.css" />
-		<link rel="stylesheet" href="/css/strategyDetails.css" />
-		<script src="/js/plugins/jrender/jrender.min.js"></script>
+<head lang="en">
+    <title>首页</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/js/bootstrap-4.1.1-dist/css/bootstrap.min.css">
+    <script src="/js/jquery/jquery.min.js"></script>
+    <script src="/js/bootstrap-4.1.1-dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/css/font/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/strategyDetails.css"/>
+    <script src="/js/plugins/jrender/jrender.min.js"></script>
+    <!--获取链接参数-->
+    <script type="text/javascript" src="/js/common.js"></script>
 
-	</head>
+    <script type="text/javascript">
+        $(function () {
+            var params = getParams();
+            if (params.id) {
+                $.get("/strategies/details/" + params.id, function (data) {
+                    $(".detail").renderValues(data);
+                });
+            }
+        });
+    </script>
+</head>
 
-	<body>
+<body>
 
-	<div class=" nav-search">
-		<a href="javascript:history.go(-1);">
-			<span><i class="fa fa-chevron-left"></i></span>
-		</a>
-	</div>
-	<hr>
+<div class=" nav-search">
+    <a href="javascript:history.go(-1);">
+        <span><i class="fa fa-chevron-left"></i></span>
+    </a>
+</div>
+<hr>
 
-	<div class="container detail">
-		<h4 class="title"><strong >广州早茶必点什么？</strong></h4>
-		<img class="head-img" src="/upload/0b044f73-7e5c-4b18-86b1-7aed39b9efe0.jpeg">
-		<div class="author">By <span ></span></div>
-		<div class="content" >
-			<p>广州人喝早茶多是“一盅两件”，一壶热茶，两三件点心，是广式早茶的“标配”。虽然说是喝早茶，但是茶点才是主角。据说，广式的早茶有上百种茶点，有荤有素有糕点有面食，主要分为以下的六大类，每一类都精心为你推荐了必点哦（此处有掌声）！</p>
-
-			<h3>荤蒸 | 豉汁凤爪、豉汁排骨、金钱肚、糯米鸡</h3>
-
-			<p><img src="/upload/bc7199bf-cc7b-4b65-b896-d5d496ea7f9e.jpeg" style="height:425px; width:680px">&nbsp;</p>
-
-			<p><strong>豉汁凤爪</strong>：茶楼必点的凤爪，虽然看着有点“恐怖”，但口感松软，状若无骨，吃在嘴里，简直美上天！而且据说凤爪美容养颜，美少女都爱，是三大“广式早茶当家花旦”之一。<br>
-				<strong>豉汁排骨</strong>：鲜嫩多汁的排骨，配着入口绵滑、肉香四溢的香芋，好吃又有营养，真叫人百吃不腻。<br>
-				<strong>金钱肚</strong>：酥而不烂的“蜂窝肚”，有嚼劲又鲜美，吃一口就叫人沉醉！<br>
-				<strong>糯米鸡：</strong>清香沁鼻的荷叶包裹着热气腾腾、软糯润滑的糯米，糯米里又藏着鸡肉、叉烧肉、排骨、咸蛋黄、冬菇、马蹄等丰富的馅料，每吃一口，都是舌尖上的享受。<br>
-				<strong>其他推荐</strong>：<strong>陈皮牛肉丸、</strong><strong>葱姜牛百叶、南乳蒸猪手、黑椒牛仔骨</strong></p>
-
-			<h3>小笼蒸 | 虾饺、干蒸烧麦</h3>
-
-			<p><img src="/upload/3c25abd5-8560-4aab-865a-eed3b6377f3a.jpeg" style="height:425px; width:680px"></p>
-
-			<p><strong>虾饺</strong>：广州必吃早茶TOP1，号称“粤点之王”。外皮晶莹剔透，内里有鲜虾配着猪肉和笋尖，吃到口里那“鲜美”真叫人欲罢不能。<br>
-				<strong>干蒸烧麦</strong>：以猪肉和鸡蛋为馅，配着一撮蟹子提鲜，外面包裹着黄色的烧卖薄皮，形如石榴花，肉多且嫩滑，爽口而不腻，真的又好吃又好看。<br>
-				<strong>其他推荐：粉果</strong></p>
-
-			<p>&nbsp;</p>
-
-			<h3>大笼蒸 | 叉烧包、奶黄包、流沙包</h3>
-
-			<p><strong>叉烧包</strong>：肥瘦适中的叉烧做馅儿，整数的包子顶部稍稍裂开露出一点叉烧馅儿，香的你口水直流。别多吃，容易饱哦。<br>
-				<strong>奶黄包</strong>：内里包裹着奶黄馅，有浓郁的奶香和蛋黄味。<br>
-				<strong>流沙包</strong>：皮子柔软外层有韧性，一口咬下去，细沙般绵柔的蛋黄颗粒就滋滋滋地冒出来，清甜得入心入脾。如果吃不惯甜口的流沙包，你也可以选择咸口的哦。<br>
-				<strong>其他推荐：蘑菇包、莲蓉包</strong></p>
-
-			<p>&nbsp;</p>
-
-			<h3>甜点 | 蛋挞、榴莲酥、马蹄糕</h3>
-
-			<p><strong>蛋挞</strong>：传统的广式蛋挞有牛油蛋挞和酥皮蛋挞两种，外皮酥脆，内里香甜，一口咬下去，都是浓郁的蛋香。<br>
-				<strong>榴莲酥</strong>：新鲜软滑的榴莲果肉做内馅，外面是层次分明、异常松化的酥皮，金黄诱人的色泽，好看得叫人拨不动腿！<br>
-				<strong>马蹄糕</strong>：外呈茶黄色、晶莹剔透，口感类似于果冻和布丁，但更有弹性。内里有马蹄粒，味甜而不腻。<br>
-				<strong>其他推荐：椰汁糕、</strong><strong>黄金糕、萝卜糕、</strong><strong>叉烧酥、马拉糕、椰丝挞、椰丝球、豆沙酥、水晶糕、千层糕</strong></p>
-
-			<p>&nbsp;</p>
-
-			<h3>煎炸 | 春卷、炸云吞、炸鲜奶</h3>
-
-			<p><strong>春卷</strong>：酥脆的表皮，荤素皆有的内馅，配上喼汁，老少皆宜。<br>
-				<strong>炸云吞</strong>：在广东，馄饨或抄手被叫做云吞。炸云吞是广东的特色小吃，内馅鲜甜，入口松化，外脆里嫩，金黄的外皮蘸一口酱汁，吃在嘴里，如临仙境。<br>
-				<strong>炸鲜奶：</strong>长方形的鲜奶糕，外面裹着一层色泽金黄的酥皮，每咬一口，都是甜甜的鲜奶溢出。<br>
-				<strong>其他推荐：咸水角、</strong><strong>煎堆、煎萝卜糕、煎马蹄糕、煎芋丝糕</strong></p>
-
-			<p>&nbsp;</p>
-
-			<h3>粥粉面 | 艇仔粥、肠粉、云吞面</h3>
-
-			<p><strong>艇仔粥</strong>：一般艇仔粥有鱼肉、虾仁、瘦肉、油条、油炸花生米、葱花等，有些还加了海蜇和鱿鱼。<br>
-				<strong>肠粉</strong>：布拉肠粉，多以瘦肉、虾仁、叉烧等做内陷，包裹着一层“雪白如玉”的肠状薄皮，皮的质感有点接近北方的凉粉，好吃到飞起。<br>
-				<strong>云吞面</strong>：盈亮微透的鲜虾配着鹅黄色的面条，鸡汤做底，一起下肚，幸福感扑面而来。<br>
-				<strong>其他推荐：及第粥、</strong><strong>鱼生粥、鸡生粥、</strong><strong>陈村粉</strong></p>
-		</div>
-	</div>
+<div class="container detail">
+    <h4 class="title"><strong render-html="title"></strong></h4>
+    <img class="head-img" render-src="coverUrl">
+    <div class="author">By <span></span></div>
+    <div class="content" render-html="strategyContent.content"></div>
+</div>
 
 
-
-	</body>
+</body>
 
 </html>

@@ -13,10 +13,10 @@ import java.util.Map;
 @RequestMapping("/images")
 public class ImageController {
     @PostMapping
-    public Map<String, Object> upload(MultipartFile file) {
+    public Map<String, Object> upload(MultipartFile upload) {
         Map<String, Object> map = new HashMap<>();
         try {
-            String uploadUrl = UploadUtil.upload(file, UploadUtil.PATH + "/upload");
+            String uploadUrl = UploadUtil.upload(upload, UploadUtil.PATH + "/upload");
             map.put("uploaded", 1);
             map.put("url", uploadUrl);
         } catch (Exception e) {

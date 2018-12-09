@@ -19,4 +19,6 @@ public interface RegionMapper {
     List<Region> selectByParentId(@Param("parentId") Long parentId);
 
     void deleteByParentId(Long id);
+
+    List<Region> selectRegionByState(int stateHot);
 }

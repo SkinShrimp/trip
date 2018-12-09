@@ -17,4 +17,5 @@ public interface StrategyDetailMapper {
     int updateByPrimaryKey(StrategyDetail record);
 
     List<StrategyDetail> selectForList(QueryObject qo);
-}
+
+    void selectByCatalogId(Long aLong);}

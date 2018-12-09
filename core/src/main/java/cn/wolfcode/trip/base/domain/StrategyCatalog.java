@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,9 +23,13 @@ public class StrategyCatalog extends BaseDomain {
     //状态
     private Boolean state;
 
+    private List<StrategyDetail> strategyDetails;
+
     public String getStateName() {
-        if (state) {
-            return "启用";
+        if (state != null) {
+            if (state) {
+                return "启用";
+            }
         }
         return "禁止";
     }
@@ -33,8 +38,10 @@ public class StrategyCatalog extends BaseDomain {
         Map<String, Object> map = new HashMap<>();
         map.put("id", this.getId());
         map.put("name", this.getName());
-        map.put("strategyId", this.getStrategy().getId());
-        map.put("title", this.getStrategy().getTitle());
+        if (strategy != null) {
+            map.put("strategyId", this.getStrategy().getId());
+            map.put("title", this.getStrategy().getTitle());
+        }
         map.put("sequence", this.getSequence());
         map.put("state", this.getState());
         return JSONUtils.toJSONString(map);

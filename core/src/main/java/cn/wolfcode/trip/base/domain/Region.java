@@ -10,8 +10,8 @@ import java.util.Map;
 @Getter
 @Setter
 public class Region extends BaseDomain {
-    private static final int STATE_NORMAL = 0;//普通状态
-    private static final int STATE_HOT = 1;//热门状态
+    public static final int STATE_NORMAL = 0;//普通状态
+    public static final int STATE_HOT = 1;//热门状态
 
     private String name;//地域名称
 
