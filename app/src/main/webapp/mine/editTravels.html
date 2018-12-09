@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>编辑游记</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/js/bootstrap-4.1.1-dist/css/bootstrap.min.css">
+    <script src="/js/jquery/jquery.min.js"></script>
+    <script src="/js/bootstrap-4.1.1-dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/css/font/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/editTravels.css"/>
+    <script src="/js/plugins/jrender/jrender.min.js"></script>
+    <link rel="stylesheet" href="/js/plugins/dialog2/dialog.css"/>
+    <script src="/js/plugins/dialog2/dialog.min.js"></script>
+
+    <!--表单提交插件引入-->
+    <script src="/js/plugins/form/jquery.form.js"></script>
+    <!-- 编辑插件ele文件的导入-->
+    <script src="/js/plugins/eleditor/webuploader.min.js"></script>
+    <script src="/js/plugins/eleditor/Eleditor.min.js"></script>
+    <!--my97-->
+    <script src="/js/My97DatePicker/WdatePicker.js"></script>
+    <!--取出链接后面参数的插件-->
+    <script src="/js/common.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+
+
+
+            //图片的上传
+            //1、更换图片
+            $("#changeBtn").click(function () {
+                $("#file-upload").click();
+            });
+            $("#file-upload").change(function () {
+                if ($(this).val() != "") {
+                    $("#file-form").ajaxSubmit(function (data) {
+                        if (data.status == 1) {
+                            //回显图片
+                            $("#coverUrl").attr("src", data.url);
+                        } else {
+
+                        }
+                    });
+                }
+            });
+
+            //将所有旅游地点查询出来
+            $.get("/regions", function (data) {
+                var options = "";
+                $.each(data, function (index, ele) {
+                    options += "<option value='" + index + "'>" + ele.name + "</option>";
+                })
+                $("#place").html(options);
+
+
+                //避免出现地区没有渲染
+                //判断编辑/新增？编辑渲染数据
+                var params = getParams();
+                if (params.id) {
+                    $.get("/travels/" + params.id, function (data) {
+                        $(".travels").renderValues(data);
+                    });
+                }
+            });
+
+            //给表单设值
+            $("#detailForm").ajaxForm({
+                beforeSubmit: function (arr) {
+                    arr.push({name: "coverUrl", value: $("#coverUrl").attr("src")});
+                    arr.push({name: "title", value: $("#title").val()});
+                    arr.push({name: "travelContent.content", value: edr.getContent()});
+                    arr.push({name: "state", value: state});
+                },
+                success: function (data) {
+                    window.location.href = "/mine/travels.html";
+                }
+            });
+
+            //当前游记的状态
+            var state = 0;
+            //保存、发布
+            $("#save").click(function () {
+                $("#detailForm").submit();
+                state = 0;
+
+            });
+            $("#release").click(function () {
+                $("#detailForm").submit();
+                state = 1;
+            });
+
+
+        });
+    </script>
+</head>
+
+<body>
+
+<!--图片的上传-->
+<form action="/images" method="post" enctype="multipart/form-data" id="file-form">
+    <input type="file" name="file" id="file-upload" style="display: none;">
+</form>
+
+<div class="search-head">
+    <div class="row nav-search">
+        <div class="col-2">
+            <a href="javascript:window.history.go(-1);">
+                <span><i class="fa fa-times"></i></span>
+            </a>
+        </div>
+        <div class="col-5"></div>
+        <div class="col" style="text-align: right;">
+            <i class="fa fa-floppy-o fg-fw" id="save"><span>保存</span></i>
+            <i class="fa fa-check" id="release"><span>发布</span></i>
+        </div>
+    </div>
+</div>
+
+<div class="travels form-group">
+    <div class="cover">
+        <img id="coverUrl" width="100%" height="200px" render-src="coverUrl"/>
+
+        <button type="button" class="btn" id="changeBtn">
+            <i class="fa fa-pencil-square-o"></i>
+            <small>更换封面</small>
+        </button>
+
+
+    </div>
+    <div class="title">
+        <input class="form-control" id="title" render-value="title" placeholder="请输入标题"/>
+    </div>
+    <!--插件编辑的内容-->
+    <h6 href="#">点击文章内容即可编辑</h6>
+    <div id="contentEditor" render-html="travelContent.content">
+    </div>
+    <hr/>
+    <div class="container">
+        <form id="detailForm" method="post" action="/travels">
+            <input type="hidden" name="id" render-value="id"/>
+            <label>出行时间:</label>
+            <input type="text" name="travelTime" render-value="travelTime" class="form-control"
+                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})">
+            <label>出行天数:</label>
+            <input type="number" name="days" render-value="days" class="form-control">
+            <label>参与人物:</label>
+            <select class="c-select form-control" name="person" render-value="person">
+                <option value="1" selected>一个人的旅行</option>
+                <option value="2">和父母</option>
+                <option value="3">和朋友</option>
+                <option value="4">和同事</option>
+                <option value="5">和爱人</option>
+                <option value="6">和其他</option>
+            </select>
+            <label>人均费用:</label>
+            <input type="text" name="perExpends" render-value="perExpends" class="form-control">
+
+            <label>旅游地点:</label>
+            <select class="form-control" id="place" name="place.id" render-value="place.id">
+            </select>
+
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="isPublic" render-attr="checked=isPublic"
+                    >是否公开
+                </label>
+            </div>
+
+        </form>
+    </div>
+
+    <hr/>
+
+</div>
+
+</body>
+
+<script type="text/javascript">
+    var edr = new Eleditor({
+        el: '#contentEditor',
+        upload: {
+            server: '/images',
+        }
+    });
+</script>
+</html>

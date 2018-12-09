@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.trip.base.mapper.TravelMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.trip.base.domain.Travel">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="travelTime" jdbcType="DATE" property="travelTime" />
+        <result column="perExpends" jdbcType="VARCHAR" property="perExpends" />
+        <result column="days" jdbcType="INTEGER" property="days" />
+        <result column="person" jdbcType="INTEGER" property="person" />
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="releaseTime" jdbcType="TIMESTAMP" property="releaseTime" />
+        <result column="isPublic" jdbcType="BIT" property="isPublic" />
+        <result column="coverUrl" jdbcType="VARCHAR" property="coverUrl" />
+        <result column="lastUpdateTime" jdbcType="TIMESTAMP" property="lastupdateTime" />
+        <result column="state" jdbcType="INTEGER" property="state" />
+        <association property="author" javaType="user" columnPrefix="author_" >
+            <id column="id" property="id"/>
+            <result column="nickName" property="nickName"/>
+            <result column="headImgUrl" property="headimgurl"/>
+        </association>
+        <association property="place" javaType="region" columnPrefix="region_" >
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+        <association property="travelContent" javaType="travelContent" columnPrefix="travelContent_" >
+            <id column="id" property="id"/>
+            <result column="content" property="content"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM travel
+        WHERE id = #{id}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.trip.base.domain.Travel" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO travel (id, title, travelTime,
+        perExpends, days, person,
+        author_id, createTime, releaseTime,
+        isPublic, place_id, coverUrl,
+        lastUpdateTime, state)
+        VALUES (#{id}, #{title}, #{travelTime},
+        #{perExpends}, #{days}, #{person},
+        #{author.id}, #{createTime}, #{releaseTime},
+        #{isPublic}, #{place.id}, #{coverUrl},
+        #{lastupdateTime}, #{state})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.trip.base.domain.Travel">
+        UPDATE travel
+        SET title = #{title},
+        travelTime = #{travelTime},
+        perExpends = #{perExpends},
+        days = #{days},
+        person = #{person},
+        isPublic = #{isPublic},
+        place_id = #{place.id},
+        coverUrl = #{coverUrl},
+        lastUpdateTime = #{lastupdateTime},
+        state = #{state}
+        WHERE id = #{id}
+    </update>
+
+    <!--更新状态-->
+    <update id="updateStateById">
+      UPDATE travel SET state = #{state} WHERE id = #{id}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        t.id,
+        t.title,
+        t.travelTime,
+        t.perExpends,
+        t.days,
+        t.person,
+        t.createTime,
+        t.releaseTime,
+        t.isPublic,
+        t.place_id,
+        t.coverUrl,
+        t.lastUpdateTime,
+        t.state,
+        u.id author_id,
+        u.nickName author_nickName,
+        u.gender author_gender,
+        u.headimgurl author_headimgurl,
+        r.id region_id,
+        r.name region_name,
+        tc.id travelcontent_id,
+        tc.content travelcontent_content
+        FROM
+        travel t
+        LEFT JOIN USER u ON t.author_id = u.id
+        LEFT JOIN region r ON r.id = t.place_id
+        LEFT JOIN travelcontent tc ON tc.id = t.id
+        WHERE t.id = #{id}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT id, title, travelTime, perExpends, days, person, author_id, createTime, releaseTime,
+        isPublic, place_id, coverUrl, lastUpdateTime, state
+        FROM travel
+    </select>
+
+    <!--分页查询-->
+    <select id="selectForList" resultMap="BaseResultMap">
+        SELECT
+        t.id,
+        t.title,
+        t.travelTime,
+        t.perExpends,
+        t.days,
+        t.person,
+        t.author_id,
+        t.createTime,
+        t.releaseTime,
+        t.isPublic,
+        t.place_id,
+        t.coverUrl,
+        t.lastUpdateTime,
+        t.state,
+        u.id author_id,
+        u.nickName author_nickName,
+        u.headimgurl author_headimgurl,
+        u.gender author_gender,
+        r.id region_id,
+        r.name region_name,
+        tc.id travelcontent_id,
+        tc.content travelcontent_content
+        FROM
+        travel t
+        LEFT JOIN USER u ON t.author_id = u.id
+        LEFT JOIN region r ON r.id = t.place_id
+        LEFT JOIN travelcontent tc ON tc.id = t.id
+        <where>
+            <if test="authorId != null">
+                t.author_id = #{authorId}
+            </if>
+            <if test="state != null and state != -2">
+                and t.state = #{state}
+            </if>
+            <if test="keyword != null">
+                and t.title LIKE  CONCAT("%", #{keyword}, "%")
+            </if>
+        </where>
+    </select>
+</mapper>

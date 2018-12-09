@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.trip.base.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="cn.wolfcode.trip.base.domain.User">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="nickName" jdbcType="VARCHAR" property="nickName" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="place" jdbcType="VARCHAR" property="place" />
+    <result column="headImgUrl" jdbcType="VARCHAR" property="headimgurl" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="coverImgUrl" jdbcType="VARCHAR" property="coverimgurl" />
+    <result column="sign" jdbcType="VARCHAR" property="sign" />
+  </resultMap>
+  <insert id="insert" parameterType="cn.wolfcode.trip.base.domain.User">
+    INSERT INTO user (email, nickName,
+    password, place, headImgUrl,
+    gender, coverImgUrl, sign)
+    VALUES (#{email}, #{nickName},
+    #{password}, #{place}, #{headimgurl},
+    #{gender}, #{coverimgurl}, #{sign})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.trip.base.domain.User">
+    UPDATE user
+    SET nickName = #{nickName},
+    place = #{place},
+    headImgUrl = #{headimgurl},
+    gender = #{gender},
+    coverImgUrl = #{coverimgurl},
+    sign = #{sign}
+    WHERE id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT id, email, nickName, password, place, headImgUrl, gender, coverImgUrl, sign
+    FROM user
+    WHERE id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    SELECT id, email, nickName, password, place, headImgUrl, gender, coverImgUrl, sign
+    FROM user
+  </select>
+
+
+  <!--分页用到-->
+  <select id="selectForList" resultMap="BaseResultMap">
+    SELECT id, email, nickName, password, place, headImgUrl, gender, coverImgUrl, sign
+    FROM user
+    <where>
+      <if test="keyWord != null">
+        (nickName like CONCAT("%", #{keyWord} ,"%") or email like CONCAT("%", #{keyWord} ,"%"))
+      </if>
+    </where>
+  </select>
+
+  <!--通过邮箱和密码查询用户信息-->
+  <select id="selectByEmailAndPassword" resultMap="BaseResultMap">
+    SELECT id, email, nickName, place, headImgUrl, gender, coverImgUrl, sign
+    FROM user WHERE email = #{email}
+    <if test="password != null">
+      AND password = #{password}
+    </if>
+  </select>
+</mapper>

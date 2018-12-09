@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.trip.base.mapper.StrategyMapper">
+  <resultMap id="BaseResultMap" type="cn.wolfcode.trip.base.domain.Strategy">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="subTitle" jdbcType="VARCHAR" property="subTitle" />
+    <result column="coverUrl" jdbcType="VARCHAR" property="coverUrl" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <association property="place" javaType="region" columnPrefix="region_">
+      <result property="id" column="id"/>
+      <result property="name" column="name"/>
+    </association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    DELETE FROM strategy
+    WHERE id = #{id}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="cn.wolfcode.trip.base.domain.Strategy" useGeneratedKeys="true">
+    INSERT INTO strategy (place_id, title, subTitle,
+    coverUrl, state)
+    VALUES (#{place.id}, #{title}, #{subTitle},
+    #{coverUrl}, #{state})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.trip.base.domain.Strategy">
+    UPDATE strategy
+    SET place_id = #{place.id},
+    title = #{title},
+    subTitle = #{subTitle},
+    coverUrl = #{coverUrl},
+    state = #{state}
+    WHERE id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT id, place_id, title, subTitle, coverUrl, state
+    FROM strategy
+    WHERE id = #{id}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    SELECT
+    s.id,
+    s.title,
+    s.subTitle,
+    s.coverUrl,
+    s.state,
+    r.id region_id,
+    r.name region_name
+    FROM
+    strategy s
+    LEFT JOIN region r ON r.id = s.place_id
+  </select>
+
+  <!--分页查询-->
+  <select id="selectForList" resultMap="BaseResultMap">
+    SELECT
+    s.id,
+    s.title,
+    s.subTitle,
+    s.coverUrl,
+    s.state,
+    r.id region_id,
+    r.name region_name
+    FROM
+    strategy s
+    LEFT JOIN region r ON r.id = s.place_id
+    <where>
+      <if test="keyword != null">
+        s.title LIKE CONCAT("%", #{keyword}, "%")
+      </if>
+    </where>
+  </select>
+</mapper>

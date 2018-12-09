@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.trip.base.mapper.TravelCommendMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.trip.base.domain.TravelCommend">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="subTitle" jdbcType="VARCHAR" property="subTitle" />
+        <result column="coverUrl" jdbcType="VARCHAR" property="coverUrl" />
+        <result column="schedule" jdbcType="DATE" property="schedule" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <association property="travel" javaType="travel"  columnPrefix="travel_">
+            <result column="id" property="id"/>
+            <result column="title" property="title"/>
+            <result column="coverUrl" property="coverUrl"/>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM travelcommend
+        WHERE id = #{id}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.trip.base.domain.TravelCommend">
+        INSERT INTO travelcommend (travel_id, title,
+        subTitle, coverUrl, schedule,
+        type)
+        VALUES (#{travel.id}, #{title},
+        #{subTitle}, #{coverUrl}, #{schedule},
+        #{type})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.trip.base.domain.TravelCommend">
+        UPDATE travelcommend
+        SET
+        title = #{title},
+        subTitle = #{subTitle},
+        coverUrl = #{coverUrl},
+        schedule = #{schedule},
+        type = #{type}
+        WHERE id = #{id}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        tc.id,
+        tc.title,
+        tc.subTitle,
+        tc.coverUrl,
+        tc. SCHEDULE,
+        tc.type,
+        t.id travel_id,
+        t.title travel_title
+        FROM
+        travelcommend tc
+        LEFT JOIN travel t ON t.id = tc.travel_id
+        WHERE tc.id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        tc.id,
+        tc.title,
+        tc.subTitle,
+        tc.coverUrl,
+        tc. SCHEDULE,
+        tc.type,
+        t.id travel_id,
+        t.title travel_title,
+        t.coverUrl travel_coverUrl
+        FROM
+        travelcommend tc
+        LEFT JOIN travel t ON t.id = tc.travel_id
+        <where>
+            <if test="keyword != null">
+                (tc.title LIKE CONCAT("%", #{keyword} ,"%") or subTitle LIKE CONCAT("%", #{keyword} ,"%"))
+            </if>
+            <if test="type > 0">
+                and tc.type = #{type}
+            </if>
+        </where>
+    </select>
+
+    <!--查询推荐的内容-->
+    <select id="selectForAppList" resultType="map">
+        SELECT
+        tc.title,
+        tc.subTitle,
+        tc.coverUrl,
+        tc. SCHEDULE,
+        t.id travel_id,
+        t.title travel_title,
+        u.id user_id,
+        u.nickName user_nickName,
+        u.headImgUrl user_headImgUrl,
+        r.name region_name
+        FROM
+        travelcommend tc
+        LEFT JOIN travel t ON t.id = tc.travel_id
+        LEFT JOIN user u ON u.id = t.author_id
+        LEFT JOIN region r ON r.id = t.place_id
+        <where>
+            <if test="type != null">
+                AND tc.type = #{type}
+            </if>
+                AND tc.schedule &lt;= now()
+        </where>
+    </select>
+</mapper>

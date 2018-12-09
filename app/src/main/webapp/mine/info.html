@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>设置个人资料</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/js/bootstrap-4.1.1-dist/css/bootstrap.min.css">
+    <script src="/js/jquery/jquery.min.js"></script>
+    <script src="/js/bootstrap-4.1.1-dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/css/font/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/myInfo.css"/>
+    <!--表单提交-->
+    <script src="/js/plugins/form/jquery.form.js"></script>
+    <!--导入渲染数据的插件-->
+    <script src="/js/plugins/jrender/jrender.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            //在sessionStorage中取值
+            var user = JSON.parse(window.sessionStorage.getItem("user"));
+            $(".info").renderValues(user);
+            //给个人基本信息设置背景图片
+            $(".myBg").css("background-image", "url(" + user.coverimgurl + ")");
+
+            //修改数据的按钮
+            $("#saveBtn").click(function () {
+                $("#infoForm").ajaxSubmit(function (data) {
+                    if (data.success) {
+                        //给界面修改后的数据
+                        window.sessionStorage.setItem("user", JSON.stringify(data.result))
+                        window.location.href = "/mine/profiles.html";
+                    }
+                });
+            });
+
+            //修改头像还是修改背景的标志//true:头像false:背景
+            var flag = true;
+            //修改保存头像
+            $("#headBtn").click(function () {
+                //JS代码触发的点击事件
+                $("#file-upload").click();
+                flag = true;
+            });
+            $("#coverBtn").click(function () {
+                //JS代码触发的点击事件
+                $("#file-upload").click();
+                flag = false;
+            });
+            //看file状态是否改变，改变提交
+            $("#file-upload").change(function () {
+                if ($(this).val()) {
+                    $("#image-form").ajaxSubmit(function (data) {
+                        if (data.status == 1) {
+                            if (flag) {
+                                //在方框中回显照片
+                                $("#headImg").prop("src", data.url);
+                                //将照片的路径回显到隐藏域中
+                                $("[name=headimgurl]").val(data.url);
+                            } else {
+                                $(".myBg").css("background-image", "url(" + data.url + ")");
+                                $("[name=coverimgurl]").val(data.url);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+<form action="/images" method="post" enctype="multipart/form-data" id="image-form">
+    <input type="file" name="file" style="display:none;" id="file-upload"/>
+
+</form>
+
+
+<div class="search-head">
+    <div class="row nav-search">
+        <div class="col">
+            <a href="javascript:window.history.go(-1);">
+                <span>取消</span>
+            </a>
+        </div>
+        <div class="col">
+            <span>设置个人资料</span>
+        </div>
+        <div class="col">
+            <a href="#" id="saveBtn">
+                <span>保存</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container info">
+    <div class="myBg">
+        <img id="headImg" class="rounded-circle" render-src="headimgurl"/>
+        <div class="editHead" id="headBtn"><i class="fa fa-pencil-square fa-lg " aria-hidden="true"></i></div>
+        <button class="btn btn-outline-light ibtn " id="coverBtn">设置背景</button>
+    </div>
+
+    <form id="infoForm" method="post" action="/users">
+        <!--指定提交方式-->
+        <input type="hidden" name="_method" value="put">
+        <input type="hidden" name="id" render-value="id">
+        <!--头像和背景图片-->
+        <input type="hidden" name="headimgurl" render-value="headimgurl">
+        <input type="hidden" name="coverimgurl" render-value="coverimgurl">
+        <!--回显邮箱信息--不做修改-->
+        <input type="hidden" name="name" render-value="email"/>
+
+
+        <label>昵称</label><input type="text" name="nickName" render-value="nickName" class="form-control">
+        <label>性别</label><select class="form-control" name="gender" render-value="gender">
+        <option value="-1">保密</option>
+        <option value="1">男</option>
+        <option value="0">女</option>
+    </select>
+        <label>地区</label><input type="text" name="place" render-value="place" class="form-control">
+        <label>签名</label><textarea name="sign" render-value="sign" class="form-control" rows="5"></textarea>
+    </form>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>我的游记</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/js/bootstrap-4.1.1-dist/css/bootstrap.min.css">
+    <script src="/js/jquery/jquery.min.js"></script>
+    <script src="/js/bootstrap-4.1.1-dist/js/bootstrap.min.js"></script>
+    <script src="/js/plugins/jrender/jrender.min.js"></script>
+    <link rel="stylesheet" href="/css/font/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/userTravels.css"/>
+    <link rel="stylesheet" href="/js/plugins/dialog2/dialog.css"/>
+    <script src="/js/plugins/dialog2/dialog.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            //获取sessionStorage中的内容
+            var user = JSON.parse(window.sessionStorage.getItem("user"));
+
+            //当前页数
+            var currentPage = 1;
+            //总页数
+            var pages;
+            //保存页面信息
+            var tracelArr = [];
+
+            function query() {
+                $.get("/users/" + user.id + "/travel", {currentPage: currentPage}, function (data) {
+                    pages = data.pages;
+                    //使用方法给数组中添加浏览信息
+                    $.merge(tracelArr, data.list);
+                    //设置数据的格式
+                    var json = {
+                        list: tracelArr
+                    };
+                    //渲染 数据渲染的时候，设置url后面的id=xxx
+                    $(".travels").renderValues(json, {
+                        'get_href': function (item, value) {
+                            $(item).attr("href", "/mine/editTravels.html?id=" + value);
+                        }
+                    });
+                });
+                currentPage += 1;
+            }
+
+            //初始化页面
+            query();
+            //当页面滚动条发生变化的时候执行该函数
+            $(window).scroll(function () {
+                if (($(window).height() + $(document).scrollTop()) + 10 >= $(document).height()) {
+                    //判断当前页与总页数的关系
+                    if (pages >= currentPage) {
+                        query();
+                    } else {
+                        $(document).dialog({
+                            type: 'notice',
+                            content: '<span class="info-text">已经到底了</span>',
+                            autoClose: 1500
+                        });
+                    }
+                }
+            });
+
+            //获取travel ID并设置链接
+
+
+        });
+    </script>
+</head>
+
+<body>
+<div class="search-head">
+    <div class="row nav-search">
+        <div class="col">
+            <a href="profiles.html">
+                <span><i class="fa fa-chevron-left"></i></span>
+            </a>
+        </div>
+        <div class="col">
+            <span>我的游记</span>
+        </div>
+        <div class="col"></div>
+    </div>
+</div>
+
+
+<div class="container travels">
+    <dl class="list" render-loop="list">
+        <dd>
+            <a href="javascript:;" render-fun="get_href" render-key="list.id">
+                <input type="hidden" name="id" id="id-data" render-html="id"/>
+                <img render-src="list.coverUrl">
+                <h6 class="title" render-html="list.title"></h6>
+                <p>最近更新时间 <span render-html="list.lastupdatetime"></span>
+                    <span class="span-right">
+                          <i class="fa fa-heart"></i><span>0</span>收藏
+						  <i class="fa fa-thumbs-o-up"></i><span>0</span>点赞
+                    </span>
+                </p>
+            </a>
+        </dd>
+    </dl>
+</div>
+
+</body>
+</html>
