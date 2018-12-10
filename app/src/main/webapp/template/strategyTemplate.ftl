@@ -18,7 +18,7 @@
 <div class="container">
     <h6>全部攻略</h6>
     <div class="row classify ">
-    <#if hots??>
+    <#if alls??>
         <#list alls as all>
         <div class="col-6 mb">
             <a href="../strategyCatalogs.html?id=${all.id}">

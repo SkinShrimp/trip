@@ -27,7 +27,6 @@
 
                 //查询标题
                 $.get("/strategies/" + params.id + "/catalogs", function (data) {
-                    console.log(data);
                     var flag = 1;
                     var json = {
                         list: data
@@ -39,13 +38,68 @@
                         },
                         'getId': function (item, value) {
                             var href = $(item).data("href");
-                            console.log(href);
                             $(item).attr("href", href + value);
                         }
                     });
                 });
 
             }
+
+
+            //滚动效果
+            var currentPage = 1;
+            //页数
+            var pages;
+
+            //渲染数组
+            var commentArr = [];
+
+            function query() {
+                $.get("/strategies/" + params.id + "/comments", {currentPage: currentPage}, function (data) {
+                    pages = data.pages;
+                    //组合就数据和查询出来的数据
+                    $.merge(commentArr, data.list);
+
+                    //渲染星星
+                    $("#comment").renderValues({list: commentArr}, {
+                        getStart: function (item, value) {
+                            var temp = "";
+                            for (var i = 0; i < value; i++) {
+                                temp += '<i class="fa fa-star"></i>';
+                            }
+                            for (var j = 0; j < 5 - value; j++) {
+                                temp += '<i class="fa fa-star-o"></i>';
+                            }
+                            $(item).append(temp);
+                        }
+                    });
+                    currentPage += 1;
+                });
+            }
+
+            query();
+            $(window).scroll(function () {
+                if ($("#pills-comment-tab").hasClass("active")) {
+                    if (($(window).height() + $(document).scrollTop()) >= $(document).height()) {
+                        console.log(pages);
+                        if (pages >= currentPage) {
+                            query();
+                        } else {
+                            $(document).dialog({
+                                type: 'notice',
+                                content: '<span class="info-text">已经到底了</span>',
+                                autoClose: 1500
+                            });
+                        }
+                    }
+                }
+            });
+
+            //页面跳转
+            $("#commentBtn").click(function () {
+                window.location.href = "/mine/addComment.html?strategyId=" + params.id;
+            });
+
         });
     </script>
 </head>
@@ -137,29 +191,28 @@
         <hr>
 
         <div id="comment">
-            <div>
+            <div render-loop="list">
                 <div class="container row comment">
                     <div class="col-2 comment-head">
                         <a href="userProfiles.html">
                             <img class="rounded-circle"
-                                 src="/upload/23a45130-e59c-4844-bc52-67aed3d57fc1.jpeg">
+                                 render-src="list.user.headimgurl">
                         </a>
                     </div>
                     <div class="col comment-right">
-                        <p class="authorName"><span>喵喵</span></p>
-                        <span class="comment-star"><i
-                                class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                class="fa fa-star"></i><i class="fa fa-star-o"></i></span>
-                        <span class="comment-date">2018-07-19</span>
+                        <p class="authorName"><span render-html="list.user.nickName"></span></p>
+                        <span class="comment-star" render-fun="getStart" render-key="list.starNum">
+                        </span>
+                        <span class="comment-date" render-html="list.createTime"></span>
                         <div class="comment-content">
                             <a href="strategyComment.html">
-                                <p>我觉得很好</p>
+                                <p render-html="list.content"></p>
                             </a>
                         </div>
 
-                        <ul class="comment-img">
+                        <ul class="comment-img" render-loop="list.images">
                             <li>
-                                <img src="/upload/9d84bc42-2797-4cf7-a86f-bcf63e192c86.jpeg">
+                                <img render-src="list.images.self">
                             </li>
                         </ul>
 
@@ -175,6 +228,7 @@
 
             </div>
         </div>
+
     </div>
 
 </div>

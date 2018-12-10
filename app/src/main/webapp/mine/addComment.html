@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <title>找攻略</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/js/bootstrap-4.1.1-dist/css/bootstrap.min.css">
+    <script src="/js/jquery/jquery.min.js"></script>
+    <script src="/js/bootstrap-4.1.1-dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/css/font/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/myStrategyComment.css"/>
+    <script src="/js/plugins/jrender/jrender.min.js"></script>
+    <link rel="stylesheet" href="/js/plugins/dialog2/dialog.css"/>
+    <script src="/js/plugins/dialog2/dialog.min.js"></script>
+    <script src="/js/plugins/form/jquery.form.js"></script>
+    <script src="/js/common.js"></script>
+    <script>
+        $(function () {
+            var strategyId = getParams();
+
+            //初始化大家都在评
+            $.get("/strategies/" + strategyId.strategyId + "/tags", function (data) {
+                $("#comment").renderValues(data);
+            });
+
+            //渲染星星
+            var starNum;
+            $(".star i").click(function () {
+                starNum = $(this).data("id");
+                var all = $(".star i");
+                for (var i = 0; i <= starNum; i++) {
+                    $(all[i]).removeClass("fa-star-o").addClass("fa-star");
+                }
+            });
+
+            var rect;
+            //图片上传
+            $(".imgs .rect").click(function () {
+                rect = $(this);
+                $("input[name=file]").click();
+            });
+            $("input[name=file]").change(function () {
+                $("#imags-upload").ajaxSubmit(function (data) {
+                    if (data.status) {
+                        var imgs = $(".imgs .rect");
+                        rect.html("<img src='" + data.url + "' />");
+                    }
+                });
+            });
+
+
+            $("#submitBtn").click(function () {
+                //获取图片的url集合
+                var urlArr = "";
+                var imgs = $(".imgs img");
+                for (var i = 0; i < imgs.length; i++) {
+                    var src = $(imgs[i]).attr("src");
+                    if (src) {
+                        urlArr += src + ";";
+                    }
+                }
+
+
+                //获取标签数组
+                var tags = [];
+                var flag = 0;
+                var childrens = $(".tag .active").children();
+                for (var i = 0; i < childrens.length; i++) {
+                    var child = $(childrens[i]).val();
+                    tags[i] = child;
+                    flag++;
+                }
+                var split = $("input[name=myTags]").val().split(" ");
+                for (var j = 0; j < split.length; j++) {
+                    if (split[j].trim().length > 0) {
+                        tags[flag] = split[j];
+                        flag += 1;
+                    }
+                }
+
+                var data = {
+                    starNum: starNum,
+                    strategyId: strategyId.strategyId,
+                    content: $("[name=content]").val(),
+                    imgUrls: urlArr,
+                    tags: tags
+                }
+                jQuery.ajaxSettings.traditional = true;
+                $.post("/strategies/" + strategyId.strategyId + "/comments", data, function (data) {
+                    window.location.href = "/strategyCatalogs?id=" + strategyId.strategyId;
+                });
+            });
+
+        })
+    </script>
+</head>
+
+<body>
+<!--图片上传隐藏域-->
+<form id="imags-upload" action="/images" method="post">
+    <input type="file" name="file" style="display: none">
+</form>
+
+<div class="search-head">
+    <div class="row nav-search">
+        <div class="col">
+            <a href="javascript:window.history.go(-1)">
+                <span><i class="fa fa-chevron-left"></i></span>
+            </a>
+
+        </div>
+        <div class="col">
+            <span>点评</span>
+        </div>
+        <div class="col"></div>
+    </div>
+</div>
+
+<div class="comment">
+    <div class="container star">
+        <p>你对该旅游地的评价</p>
+        <i class="fa fa-star-o fa-lg" data-id="0"></i>
+        <i class="fa fa-star-o fa-lg" data-id="1"></i>
+        <i class="fa fa-star-o fa-lg" data-id="2"></i>
+        <i class="fa fa-star-o fa-lg" data-id="3"></i>
+        <i class="fa fa-star-o fa-lg" data-id="4"></i>
+    </div>
+    <hr/>
+    <div class="container tag">
+        <p>请为该旅游地选择合适的标签（大家都在评）</p>
+        <div class="btn-group-toggle" data-toggle="buttons" id="comment">
+            <div render-loop="list">
+                <label class="btn btn-outline-danger ">
+                    <input type="checkbox" autocomplete="off" render-html="list.name" value="价格便宜"> 价格便宜
+                </label>
+                <label class="btn btn-outline-danger">
+                    <input type="checkbox" autocomplete="off" value="住宿方便"> 住宿方便
+                </label>
+                <label class="btn btn-outline-danger ">
+                    <input type="checkbox" autocomplete="off" value="旅游景点多"> 旅游景点多
+                </label>
+                <label class="btn btn-outline-danger ">
+                    <input type="checkbox" autocomplete="off" value="适合拍照">适合拍照
+                </label>
+                <label class="btn btn-outline-danger">
+                    <input type="checkbox" autocomplete="off" value="吃的很多">吃的很多
+                </label>
+                <label class="btn btn-outline-danger">
+                    <input type="checkbox" autocomplete="off" value="交通不方便">交通不方便
+                </label>
+            </div>
+        </div>
+
+        <p>添加你自己的标签</p>
+        <input name="myTags" class="form-control" placeholder="请使用空格隔开标签，每个标签不超8个字"/>
+
+        <p>更多评价内容</p>
+        <textarea name="content" class="form-control" rows="5" placeholder="请填写你对该旅游地的评价"></textarea>
+    </div>
+    <div class="container imgs ">
+        <p>上传图片</p>
+
+        <div class="row">
+            <div class="col-3 rect">
+                <span>上传</span>
+            </div>
+            <div class="col-3 rect">
+                <span>上传</span>
+            </div>
+            <div class="col-3 rect">
+                <span>上传</span>
+            </div>
+            <div class="col-3 rect">
+                <span>上传</span>
+            </div>
+            <div class="col-3 rect">
+                <span>上传</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="operation">
+    <button class="btn" onclick="window.history.go(-1)">放弃评价</button>
+    <button class="btn" id="submitBtn">提交评价</button>
+</div>
+
+
+</body>
+
+
+</html>

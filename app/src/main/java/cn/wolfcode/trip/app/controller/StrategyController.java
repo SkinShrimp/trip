@@ -1,9 +1,12 @@
 package cn.wolfcode.trip.app.controller;
 
 import cn.wolfcode.trip.base.domain.*;
+import cn.wolfcode.trip.base.query.StrategyCommentQueryObject;
 import cn.wolfcode.trip.base.query.StrategyQueryObject;
+import cn.wolfcode.trip.base.query.TagQueryObject;
 import cn.wolfcode.trip.base.query.TravelCommendQueryObject;
 import cn.wolfcode.trip.base.service.*;
+import cn.wolfcode.trip.base.util.JsonResult;
 import com.github.pagehelper.PageInfo;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -35,6 +38,10 @@ public class StrategyController {
     private IStrategyDetailService strategyDetailService;
     @Autowired
     private IStrategyCatalogService strategyCatalogService;
+    @Autowired
+    private IStrategyCommentService strategyCommentService;
+    @Autowired
+    private ITagService tagService;
 
     @GetMapping
     public PageInfo<TravelCommend> list(TravelCommendQueryObject qo) {
@@ -99,5 +106,35 @@ public class StrategyController {
     @GetMapping("/details/{id}")
     public StrategyDetail getStrategyDetailById(@PathVariable Long id) {
         return strategyDetailService.get(id);
+    }
+
+    /**
+     * 大攻略页面的分页查询
+     *
+     * @param qo
+     * @return
+     */
+    @GetMapping("/split")
+    public PageInfo<Strategy> getSplitStrategy(StrategyQueryObject qo) {
+        return strategyService.query(qo);
+    }
+
+    @GetMapping("/{strategyId}/comments")
+    public PageInfo<StrategyComment> queryComments(StrategyCommentQueryObject qo) {
+        qo.setOrderBy("sc.createTime DESC");
+        return strategyCommentService.query(qo);
+    }
+
+    @PostMapping("/{strategy.id}/comments")
+    public JsonResult saveComment(StrategyComment strategyComment, String[] tags) {
+        strategyCommentService.save(strategyComment, tags);
+        return new JsonResult();
+    }
+
+
+    @GetMapping("/{strategyId}/tags")
+    public PageInfo<Tag> getTags(TagQueryObject qo) {
+        qo.setCurrentPage(6);
+        return tagService.queryTop(qo);
     }
 }

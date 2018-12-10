@@ -18,7 +18,6 @@
         $(".btn-look").click(function () {
             $("#editForm")[0].reset();
             var json = $(this).data("json");
-            console.log(json);
             $("[name='id']").val(json.id);
             $("#coverUrl").attr("src", json.coverUrl);
             $("input[name=coverUrl]").val(json.coverUrl);
@@ -40,7 +39,6 @@
 
             //获取文本框中的内容
             $.get("/strategyDetail/content.do?id=" + json.id, function (data) {
-                console.log(data.content);
                 content.setData(data.content);
 
             });

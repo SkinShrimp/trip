@@ -11,13 +11,16 @@
     <link rel="stylesheet" href="/css/font/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="/css/reset.css"/>
     <link rel="stylesheet" href="/css/strategy.css"/>
+    <link rel="stylesheet" href="/js/plugins/dialog2/dialog.css"/>
     <script src="/js/plugins/jrender/jrender.min.js"></script>
+
+    <script type="text/javascript" src="/js/plugins/dialog2/dialog.min.js"></script>
+
 
     <script type="text/javascript">
         $(function () {
             //显示推荐里面的展示头
             $.get("/strategies", function (data) {
-                console.log(data[0]);
                 $(".commend").renderValues(data.list[0], {
                     "getId": function (item, value) {
                         var href = $(item).data("href");
@@ -47,21 +50,73 @@
                 $("#pills-tab").append(temp);
                 $(".tab-content").append(content);
 
+                //定义地区初始化id
+                var regionId;
                 //点击标签页发送请求获取模板
                 $(".nav-link").click(function () {
-                    var id = $(this).data("id");
-                    if (id) {
-                        $.get("/strategies/regions/" + id + "/strategies", function (data) {
-                            $("#pills-" + id).html(data);
+                    regionId = $(this).data("id");
+                    if (regionId) {
+                        $.get("/strategies/regions/" + regionId + "/strategies", function (data) {
+                            $("#pills-" + regionId).html(data);
                         }, "html");
                     }
                 });
+            });
+
+            //分页拼接
+            var currentPage = 2;
+            var pages;
+
+            function query() {
+                $.get("/strategies/split", {currentPage: currentPage, regionId: regionId}, function (data) {
+                    console.log(data);
+                    pages = value.pages;
+                    var temp = "";
+                    $.each(data.list, function (index, value) {
+                        var split = $("#template").clone(true);
+                        var href = split.find("a").data("href");
+                        split.find("a").attr("href", href + value.id);
+                        split.find("img").attr("src", value.coverUrl);
+                        split.find("span").html(value.title);
+                        temp += split;
+                    });
+
+                    currentPage += 1;
+                });
+            }
+
+            $(window).scroll(function () {
+                if (($(window).height + $(document).scrollTop) >= $(document).height) {
+                    console.log(pages);
+                    if (currentPage >= pages) {
+                        query();
+                    } else {
+                        $(document).dialog({
+                            type: 'notice',
+                            content: '<span class="info-text">已经到底了</span>',
+                            autoClose: 1500
+                        });
+                    }
+                }
             });
         });
     </script>
 </head>
 
 <body>
+
+<div id="template" style="display: none">
+    <div class="col-6 mb">
+        <a data-href="/strategyCatalogs.html?id=">
+            <img class="float-left " src="">
+            <div class="classify-text">
+                <span></span>
+                <p>0人收藏</p>
+            </div>
+        </a>
+    </div>
+</div>
+
 <div class="search-head">
     <div class="row nav-search">
         <div class="col-2">
@@ -83,6 +138,7 @@
             <span style="font-weight: bold;">推荐</span>
         </a>
     </li>
+    <!--这里添加推荐的地区-->
 </ul>
 
 <div class="tab-content" id="pills-tabContent">
@@ -111,6 +167,7 @@
         </div>
     </div>
 
+    <!--添加模板返回地区的信息-->
 </div>
 
 

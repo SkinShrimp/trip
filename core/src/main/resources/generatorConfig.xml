@@ -97,7 +97,7 @@
 			<generatedKey column="id" sqlStatement="JDBC" />
 -->
 		<!--</table>-->
-		<table tableName="strategydetail" domainObjectName="strategyDetail">
+		<table tableName="tag" domainObjectName="Tag">
 			<property name="useActualColumnNames" value="true"/>
 			<property name="constructorBased" value="false" />
 			<generatedKey column="id" sqlStatement="JDBC" />
