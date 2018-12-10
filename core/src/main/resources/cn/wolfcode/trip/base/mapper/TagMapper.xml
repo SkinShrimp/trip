@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.trip.base.mapper.TagMapper">
+  <resultMap id="BaseResultMap" type="cn.wolfcode.trip.base.domain.Tag">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    DELETE FROM tag
+    WHERE id = #{id}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="cn.wolfcode.trip.base.domain.Tag" useGeneratedKeys="true">
+    INSERT INTO tag (name)
+    VALUES (#{name})
+  </insert>
+
+  <!--保护表之间的关系-->
+  <insert id="insertRelation">
+    INSERT INTO comment_tag(comment_id, tag_id) VALUES (#{commentId}, #{tagId})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.trip.base.domain.Tag">
+    UPDATE tag
+    SET name = #{name}
+    WHERE id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT id, name
+    FROM tag
+    WHERE id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    SELECT id, name
+    FROM tag
+  </select>
+  <select id="selectTop" resultType="tag" >
+    SELECT
+    count(t.NAME) num
+    FROM
+    tag t
+    WHERE
+    t.id IN (SELECT ct.tag_id FROM comment_tag ct WHERE ct.comment_id IN (
+    SELECT	sc.id FROM strategycomment sc WHERE sc.strategy_id = #{strategyId}))
+    GROUP BY
+    t.NAME
+    ORDER BY
+    num DESC
+  </select>
+</mapper>
